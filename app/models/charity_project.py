@@ -8,8 +8,8 @@ from app.core.db import Base
 class CharityProject(Base):
     fully_invested = Column(Boolean, default=False)
     create_date = Column(DateTime, default=datetime.now)
-    close_date = Column(DateTime, default=None)
-    name = Column(String(100), unique=True, nullable=False)
+    name = Column(String(110), unique=True, nullable=False)
     description = Column(Text, nullable=False)
+    close_date = Column(DateTime, default=None)
     full_amount = Column(Integer, nullable=False)
     invested_amount = Column(Integer, default=0)

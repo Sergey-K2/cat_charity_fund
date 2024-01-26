@@ -85,3 +85,14 @@ async def check_updating_full_amount(
             status_code=HTTPStatus.UNPROCESSABLE_ENTITY,
             detail=ERROR_LOW_FULL_AMOUNT,
         )
+
+
+async def check_info_none(
+        object: str,
+        session: AsyncSession,
+) -> None:
+    if object is None:
+        raise HTTPException(
+            status_code=HTTPStatus.UNPROCESSABLE_ENTITY,
+            detail='Field can not be None'
+        )

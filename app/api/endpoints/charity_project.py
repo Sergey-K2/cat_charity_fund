@@ -9,6 +9,7 @@ from app.api.validators import (
     check_name_duplicate,
     check_project_invested,
     check_updating_full_amount,
+    check_info_none,
 )
 from app.core.db import get_async_session
 from app.core.user import current_superuser
@@ -42,11 +43,13 @@ async def get_all_charity_projects(
     dependencies=[Depends(current_superuser)],
 )
 async def create_new_charity_project(
-    project: CharityProjectCreate,
+    charity_project: CharityProjectCreate,
     session: AsyncSession = Depends(get_async_session),
 ):
-    await check_name_duplicate(project.name, session)
-    new_project = await charityproject_crud.create(project, session)
+    await check_info_none(charity_project.name, session)
+    await check_info_none(charity_project.description, session)
+    await check_name_duplicate(charity_project.name, session)
+    new_project = await charityproject_crud.create(charity_project, session)
     await investing(new_project, session)
     await session.refresh(new_project)
     return new_project
