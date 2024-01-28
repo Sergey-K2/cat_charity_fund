@@ -8,40 +8,39 @@ from app.models.charity_project import CharityProject
 
 
 class CRUDCharityProject(CRUDBase):
-    async def get_project_id_by_name(
+    async def get_project_id(
         self,
         name: str,
         session: AsyncSession,
     ) -> Optional[int]:
-        db_project_id = await session.execute(
+        project_id = await session.execute(
             select(CharityProject.id).where(CharityProject.name == name)
         )
-        db_project_id = db_project_id.scalars().first()
-        return db_project_id
+        return project_id.scalars().first()
 
-    async def get_project_invested_amount(
+    async def get_invested_in_project(
         self,
         project_id: int,
         session: AsyncSession,
     ) -> int:
-        project_invested_amount = await session.execute(
+        invested_in_project = await session.execute(
             select(CharityProject.invested_amount).where(
                 CharityProject.id == project_id
             )
         )
-        return project_invested_amount.scalars().first()
+        return invested_in_project.scalars().first()
 
-    async def get_project_fully_invested(
+    async def get_project_investing_done(
         self,
         project_id: int,
         session: AsyncSession,
     ) -> bool:
-        project_fully_invested = await session.execute(
+        project_investing_done = await session.execute(
             select(CharityProject.fully_invested).where(
                 CharityProject.id == project_id
             )
         )
-        return project_fully_invested.scalars().first()
+        return project_investing_done.scalars().first()
 
 
 charityproject_crud = CRUDCharityProject(CharityProject)

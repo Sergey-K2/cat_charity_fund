@@ -4,12 +4,12 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.validators import (
-    charity_project_closed,
+    charity_project_done,
     check_charityproject_exists,
     check_name_duplicate,
     check_project_invested,
-    check_updating_full_amount,
-    check_info_none,
+    check_updating_full_sum,
+    check_if_none,
 )
 from app.core.db import get_async_session
 from app.core.user import current_superuser
@@ -32,7 +32,7 @@ router = APIRouter()
 async def get_all_charity_projects(
     session: AsyncSession = Depends(get_async_session),
 ):
-    projects = await charityproject_crud.get_multi(session)
+    projects = await charityproject_crud.get_multiple(session)
     return projects
 
 
@@ -46,8 +46,8 @@ async def create_new_charity_project(
     charity_project: CharityProjectCreate,
     session: AsyncSession = Depends(get_async_session),
 ):
-    await check_info_none(charity_project.name, session)
-    await check_info_none(charity_project.description, session)
+    await check_if_none(charity_project.name, session)
+    await check_if_none(charity_project.description, session)
     await check_name_duplicate(charity_project.name, session)
     new_project = await charityproject_crud.create(charity_project, session)
     await investing(new_project, session)
@@ -62,19 +62,19 @@ async def create_new_charity_project(
 )
 async def partially_update_charity_poject(
     project_id: int,
-    obj_in: CharityProjectUpdate,
+    object: CharityProjectUpdate,
     session: AsyncSession = Depends(get_async_session),
 ):
     project = await check_charityproject_exists(project_id, session)
-    await charity_project_closed(project_id, session)
-    if obj_in.full_amount is not None:
-        await check_updating_full_amount(
-            project_id, obj_in.full_amount, session
+    await charity_project_done(project_id, session)
+    if object.full_amount is not None:
+        await check_updating_full_sum(
+            project_id, object.full_amount, session
         )
 
-    if obj_in.name is not None:
-        await check_name_duplicate(obj_in.name, session)
-    project = await charityproject_crud.update(project, obj_in, session)
+    if object.name is not None:
+        await check_name_duplicate(object.name, session)
+    project = await charityproject_crud.update(project, object, session)
     await investing(project, session)
     await session.refresh(project)
     return project
