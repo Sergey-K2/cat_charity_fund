@@ -62,9 +62,8 @@ async def check_updating_full_sum(
         )
 
 
-async def check_if_none(
+def check_if_none(
         object: str,
-        session: AsyncSession,
 ) -> None:
     if object is None:
         raise HTTPException(
