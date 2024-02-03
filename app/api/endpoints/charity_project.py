@@ -57,6 +57,7 @@ async def create_new_charity_project(
             new_project, await donation_crud.get_multiple(session)
         )
     )
+    await session.commit()
     await session.refresh(new_project)
     return new_project
 

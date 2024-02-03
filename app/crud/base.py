@@ -1,4 +1,4 @@
-from typing import Optional, List, TypeVar
+from typing import Optional, TypeVar
 
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy import select
@@ -26,14 +26,6 @@ class CRUDBase:
 
     async def get_multiple(self, session: AsyncSession):
         db_objects = await session.execute(select(self.model))
-        return db_objects.scalars().all()
-
-    async def get_multiple_opened(self, session: AsyncSession) -> List[ModelType]:
-        db_objects = await session.execute(
-            select(self.model)
-            .where(self.model.fully_invested == 0)
-            .order_by(self.model.create_date)
-        )
         return db_objects.scalars().all()
 
     async def get_by_attribute(

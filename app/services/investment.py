@@ -13,7 +13,7 @@ def investing(
     target.invested_amount = (
         0 if target.invested_amount is None else target.invested_amount
     )
-    new_sources = []
+    updated_sources = []
     for source in sources:
         if target.fully_invested:
             break
@@ -21,10 +21,10 @@ def investing(
             source.full_amount - source.invested_amount,
             target.full_amount - target.invested_amount
         )
-        for obj in (target, source):
-            obj.invested_amount += donation
-            if obj.full_amount == obj.invested_amount:
-                obj.fully_invested = 1
-                obj.close_date = datetime.utcnow()
-        new_sources.append(source)
-    return new_sources
+        for object in (target, source):
+            object.invested_amount += donation
+            if object.full_amount == object.invested_amount:
+                object.fully_invested = 1
+                object.close_date = datetime.utcnow()
+        updated_sources.append(source)
+    return updated_sources
