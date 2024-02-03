@@ -53,7 +53,7 @@ async def create_new_donation(
 ):
     new_donation = await donation_crud.create(donation, session, user, False)
     session.add_all(investing(new_donation,
-                    await charityproject_crud.get_multiple_opened(session)))
+                    await charityproject_crud.get_multiple(session)))
     await session.commit()
     await session.refresh(new_donation)
     return new_donation
