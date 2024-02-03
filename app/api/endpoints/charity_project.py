@@ -14,6 +14,7 @@ from app.api.validators import (
 from app.core.db import get_async_session
 from app.core.user import current_superuser
 from app.crud.charity_project import charityproject_crud
+from app.crud.donation import donation_crud
 from app.schemas.charity_project import (
     CharityProjectCreate,
     CharityProjectDB,
@@ -49,8 +50,13 @@ async def create_new_charity_project(
     check_if_none(charity_project.name)
     check_if_none(charity_project.description)
     await check_name_duplicate(charity_project.name, session)
-    new_project = await charityproject_crud.create(charity_project, session)
-    await investing(new_project, session)
+    new_project = await charityproject_crud.create(charity_project, session,
+                                                   commit=False)
+    session.add_all(
+        investing(
+            new_project, await donation_crud.get_multiple_opened(session)
+        )
+    )
     await session.refresh(new_project)
     return new_project
 
@@ -75,8 +81,6 @@ async def partially_update_charity_poject(
     if object.name is not None:
         await check_name_duplicate(object.name, session)
     project = await charityproject_crud.update(project, object, session)
-    await investing(project, session)
-    await session.refresh(project)
     return project
 
 

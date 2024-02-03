@@ -6,4 +6,3 @@ from app.core.db import BaseCharityDonation
 class Donation(BaseCharityDonation):
     user_id = Column(Integer, ForeignKey('user.id'))
     comment = Column(Text)
-

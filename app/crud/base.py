@@ -1,10 +1,13 @@
-from typing import Optional
+from typing import Optional, List, TypeVar
 
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.db import Base
 from app.models import User
+
+ModelType = TypeVar("ModelType", bound=Base)
 
 
 class CRUDBase:
@@ -25,6 +28,14 @@ class CRUDBase:
         db_objects = await session.execute(select(self.model))
         return db_objects.scalars().all()
 
+    async def get_multiple_opened(self, session: AsyncSession) -> List[ModelType]:
+        db_objects = await session.execute(
+            select(self.model)
+            .where(self.model.fully_invested == 0)
+            .order_by(self.model.create_date)
+        )
+        return db_objects.scalars().all()
+
     async def get_by_attribute(
         self,
         attribute: str,
@@ -42,14 +53,16 @@ class CRUDBase:
         object,
         session: AsyncSession,
         user: Optional[User] = None,
+        commit: bool = True
     ):
         object_in_data = object.dict()
         if user is not None:
             object_in_data['user_id'] = user.id
         db_object = self.model(**object_in_data)
         session.add(db_object)
-        await session.commit()
-        await session.refresh(db_object)
+        if commit:
+            await session.commit()
+            await session.refresh(db_object)
         return db_object
 
     async def update(

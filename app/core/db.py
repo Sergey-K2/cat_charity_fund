@@ -2,7 +2,7 @@ from datetime import datetime
 
 from sqlalchemy import Boolean, Column, DateTime, Integer
 
-from sqlalchemy import Column, Integer
+from sqlalchemy import Column, Integer, CheckConstraint
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import declarative_base, declared_attr, sessionmaker
 
@@ -33,8 +33,12 @@ async def get_async_session():
 class BaseCharityDonation(Base):
     __abstract__ = True
 
-    full_amount = Column(Integer, nullable=False)
-    invested_amount = Column(Integer, default=0)
+    full_amount = Column(
+        Integer, CheckConstraint("full_amount >= 0"), default=0
+    )
+    invested_amount = Column(
+        Integer, CheckConstraint("full_amount >= invested_amount"), default=0
+    )
     fully_invested = Column(Boolean, default=False)
     create_date = Column(DateTime, default=datetime.now)
     close_date = Column(DateTime)
