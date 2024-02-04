@@ -1,11 +1,12 @@
 from datetime import datetime
+from typing import List
 
 from app.models.base import BaseCharityDonation
 
 
 def investing(
-    target: BaseCharityDonation, sources: BaseCharityDonation
-) -> BaseCharityDonation:
+    target: BaseCharityDonation, sources: List[BaseCharityDonation]
+) -> List[BaseCharityDonation]:
     updated_sources = []
     for source in sources:
         if target.fully_invested:
