@@ -1,15 +1,11 @@
 from datetime import datetime
-from typing import List, TypeVar
 
 from app.models.base import BaseCharityDonation
 
-TargetType = TypeVar("TargetType", bound=BaseCharityDonation)
-SourceType = TypeVar("SourceType", bound=BaseCharityDonation)
-
 
 def investing(
-    target: TargetType, sources: List[SourceType]
-) -> List[SourceType]:
+    target: BaseCharityDonation, sources: BaseCharityDonation
+) -> BaseCharityDonation:
     updated_sources = []
     for source in sources:
         if target.fully_invested:
