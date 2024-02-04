@@ -1,4 +1,4 @@
-from typing import Optional, TypeVar
+from typing import Optional, TypeVar, List
 
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy import select
@@ -28,6 +28,17 @@ class CRUDBase:
         db_objects = await session.execute(select(self.model))
         return db_objects.scalars().all()
 
+    async def get_not_invested(
+        self,
+        session: AsyncSession
+    ) -> List[ModelType]:
+        not_invested = await session.scalars(
+            select(self.model).where(
+                self.model.fully_invested == 0
+            )
+        )
+        return not_invested.all()
+
     async def get_by_attribute(
         self,
         attribute: str,
@@ -51,6 +62,8 @@ class CRUDBase:
         if user is not None:
             object_in_data['user_id'] = user.id
         db_object = self.model(**object_in_data)
+        if db_object.invested_amount is None:
+            db_object.invested_amount = 0
         session.add(db_object)
         if commit:
             await session.commit()
