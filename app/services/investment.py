@@ -1,10 +1,10 @@
 from datetime import datetime
 from typing import List, TypeVar
 
-from app.models import Base
+from app.models.base import BaseCharityDonation
 
-TargetType = TypeVar("TargetType", bound=Base)
-SourceType = TypeVar("SourceType", bound=Base)
+TargetType = TypeVar("TargetType", bound=BaseCharityDonation)
+SourceType = TypeVar("SourceType", bound=BaseCharityDonation)
 
 
 def investing(
